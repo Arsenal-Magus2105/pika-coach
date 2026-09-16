@@ -9,7 +9,6 @@ import '../engine/engine_line.dart';
 import '../engine/nnue_installer.dart';
 import '../engine/pikafish_service.dart';
 import 'move_grader.dart';
-import 'pv_replay.dart';
 import 'vietnamese_notation.dart';
 
 enum CoachStatus { starting, ready, analyzing, engineUnavailable }
