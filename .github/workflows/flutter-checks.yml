@@ -27,3 +27,25 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
+
+  ios-build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Confirm Xcode and CocoaPods
+        run: |
+          xcodebuild -version
+          pod --version
+      - name: Install pinned Pikafish and NNUE
+        run: ../scripts/bootstrap.sh
+      - run: flutter pub get
+      - name: Compile iOS simulator app
+        run: flutter build ios --simulator --no-codesign
