@@ -1,0 +1,29 @@
+name: Flutter checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Validate bootstrap scripts
+        run: bash -n ../scripts/*.sh
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
