@@ -49,3 +49,17 @@ jobs:
       - run: flutter pub get
       - name: Compile iOS simulator app
         run: flutter build ios --simulator --no-codesign
+      - name: Verify iOS simulator FFI symbols
+        run: |
+          APP_BINARY=build/ios/iphonesimulator/Runner.app/Runner
+          for symbol in pikafish_init pikafish_main pikafish_stdin_write pikafish_stdout_read; do
+            nm -gU "$APP_BINARY" | grep -q " _$symbol$"
+          done
+      - name: Compile iPhone app without signing
+        run: flutter build ios --release --no-codesign
+      - name: Verify iPhone FFI symbols
+        run: |
+          APP_BINARY=build/ios/iphoneos/Runner.app/Runner
+          for symbol in pikafish_init pikafish_main pikafish_stdin_write pikafish_stdout_read; do
+            nm -gU "$APP_BINARY" | grep -q " _$symbol$"
+          done
