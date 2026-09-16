@@ -12,7 +12,9 @@ Pod::Spec.new do |s|
   s.source = { :git => pubspec['repository'], :tag => s.version.to_s }
   s.source_files = 'Classes/**/*', 'FlutterPikafish/*', 'Pikafish/src/**/*'
   s.public_header_files = 'Classes/**/*.h'
-  s.exclude_files = 'Pikafish/src/incbin/UNLICENCE'
+  # Upstream universal/ contains standalone Linux/CPU dispatch entry points.
+  # The plugin invokes Stockfish::main directly using UNIVERSAL_BINARY.
+  s.exclude_files = 'Pikafish/src/universal/**/*', 'Pikafish/src/incbin/UNLICENCE'
   s.dependency 'Flutter'
   s.platform = :ios, '13.0'
   s.ios.deployment_target = '13.0'
