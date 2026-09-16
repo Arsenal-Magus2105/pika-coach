@@ -63,3 +63,20 @@ jobs:
           for symbol in pikafish_init pikafish_main pikafish_stdin_write pikafish_stdout_read; do
             nm -gU "$APP_BINARY" | grep -q " _$symbol$"
           done
+      - name: Package unsigned IPA for Windows sideloading
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir -p build/ios/ipa/Payload
+          ditto build/ios/iphoneos/Runner.app build/ios/ipa/Payload/Runner.app
+          (cd build/ios/ipa && ditto -c -k --keepParent Payload PikaCoach-unsigned.ipa)
+          unzip -tq build/ios/ipa/PikaCoach-unsigned.ipa
+          test -s build/ios/ipa/PikaCoach-unsigned.ipa
+          du -h build/ios/ipa/PikaCoach-unsigned.ipa
+      - name: Upload unsigned IPA for Windows
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: PikaCoach-unsigned-iPhone
+          path: app/build/ios/ipa/PikaCoach-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7

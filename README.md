@@ -6,8 +6,8 @@ comparisons, move grading, and replayable principal variations.
 
 > Current milestone: source MVP. The board, legal move validation, local
 > Pikafish transport, MultiPV parser, move grader, PV replay, Vietnamese UI,
-> and automated tests are present. An Xcode build is still required before an
-> `.ipa` can be installed on a device.
+> and automated tests are present. GitHub Actions builds an unsigned iPhone IPA;
+> physical-device installation and engine runtime still need testing.
 
 ## What works in the MVP
 
@@ -23,9 +23,35 @@ The LLM explanation layer is deliberately not part of this milestone. Engine
 evidence is being made stable first; a coach model can later explain that
 evidence without inventing moves.
 
+## Try it from Windows 11 without a Mac
+
+The GitHub Actions macOS runner compiles iOS code and uploads an **unsigned**
+`PikaCoach-unsigned.ipa` for personal device testing. An unsigned IPA cannot be
+installed directly: a sideloading tool must sign it with your own Apple ID.
+
+1. On GitHub, open **Actions → Flutter checks → latest successful run →
+   Artifacts → PikaCoach-unsigned-iPhone**. Unzip the downloaded artifact to get
+   `PikaCoach-unsigned.ipa`. Artifacts expire after 7 days; rerun the workflow
+   from Actions when a fresh build is needed.
+2. On Windows, [set up AltStore Classic and AltServer](https://faq.altstore.io/altstore-classic/how-to-install-altstore-windows.md)
+   with a cable, iTunes and iCloud from Apple's direct downloads. Unlock and
+   trust the connected iPhone, then enable Developer Mode in iOS settings.
+3. Transfer the IPA to the iPhone's Files app (for example through iCloud
+   Drive). In AltStore Classic, open **My Apps → +** and select the IPA to sign
+   and install it. Keep AltServer reachable for installation and refreshes.
+4. Open Pika Coach and verify that the board loads and an **Analyze** request
+   returns Pikafish lines. Report any crash or blank analysis with a screenshot.
+
+A free Apple ID can be used for testing. AltStore's free-account installs
+expire after 7 days and count toward its 3 sideloaded-app limit; it can refresh
+apps while AltServer is available. Sign in only inside the official AltStore
+setup on your own devices; do not add Apple credentials to GitHub Actions.
+The CI build and exported IPA check packaging and native symbols, but do not
+prove that Pikafish runs on a physical iPhone until step 4 succeeds.
+
 ## Prepare the project
 
-Requirements:
+Requirements for building locally on macOS:
 
 - Flutter stable with Dart 3.3 or newer
 - macOS with current Xcode for the iOS build
