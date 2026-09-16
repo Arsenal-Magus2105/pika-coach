@@ -17,9 +17,9 @@ void main() {
     });
 
     test('stops safely at an illegal engine move', () {
-      final result = PvReplay.replay(Position.startpos, const ['h2h9']);
+      final result = PvReplay.replay(Position.startpos, const ['h2g3']);
       expect(result.isComplete, isFalse);
-      expect(result.rejectedMove, 'h2h9');
+      expect(result.rejectedMove, 'h2g3');
       expect(result.frames, isEmpty);
     });
   });

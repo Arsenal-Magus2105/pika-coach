@@ -168,14 +168,18 @@ class _AnalysisPanel extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
-              'LỰA CHỌN CỦA PIKAFISH',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.8,
+            Expanded(
+              child: Text(
+                'LỰA CHỌN CỦA PIKAFISH',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.8,
+                ),
               ),
             ),
-            const Spacer(),
+            const SizedBox(width: 12),
             if (lines.isNotEmpty)
               Text(
                 'Depth ${lines.first.depth}',
