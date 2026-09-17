@@ -12,6 +12,12 @@ const vendor = path.resolve(__dirname, '../vendor');
       const data = fs.readFileSync(path.join(vendor, 'pikafish.data'));
       return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
     },
+    instantiateWasm: (imports, receiveInstance) => {
+      const module = new WebAssembly.Module(fs.readFileSync(path.join(vendor, 'pikafish.wasm')));
+      const instance = new WebAssembly.Instance(module, imports);
+      receiveInstance(instance, module);
+      return instance.exports;
+    },
     read_stdout: line => output.push(line),
   });
   engine.send_command('uci');
