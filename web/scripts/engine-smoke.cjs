@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const path = require('node:path');
 const Pikafish = require('../vendor/pikafish.js');
 const vendor = path.resolve(__dirname, '../vendor');
@@ -7,6 +8,10 @@ const vendor = path.resolve(__dirname, '../vendor');
   const output = [];
   const engine = await Pikafish({
     locateFile: file => path.join(vendor, file),
+    getPreloadedPackage: () => {
+      const data = fs.readFileSync(path.join(vendor, 'pikafish.data'));
+      return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+    },
     read_stdout: line => output.push(line),
   });
   engine.send_command('uci');
