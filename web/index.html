@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102727">
+  <meta name="description" content="Luyện Cờ Tướng cùng Pikafish trên iPhone và máy tính.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <title>Pika Coach · Cờ Tướng</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">帥</span><div><strong>PIKA COACH</strong><small>CỜ TƯỚNG · PHÂN TÍCH</small></div></div>
+    <span id="engine-status" class="engine-status" role="status">Đang tải Pikafish…</span>
+  </header>
+
+  <main class="layout">
+    <section class="board-card" aria-label="Bàn Cờ Tướng">
+      <div class="section-head"><div><span class="eyebrow">BÀN CỜ</span><h1>Học từng nước đi.</h1></div><span id="turn" class="turn-pill">Đỏ đi</span></div>
+      <div class="board-wrap">
+        <div id="board" class="board" aria-label="Bàn Cờ Tướng, chạm một quân rồi chạm ô đích">
+          <div class="grid">
+            <svg viewBox="0 0 800 900" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0" y="0" width="800" height="900" fill="none" stroke="currentColor" stroke-width="3"/>
+              <path d="M0 100H800 M0 200H800 M0 300H800 M0 400H800 M0 500H800 M0 600H800 M0 700H800 M0 800H800 M100 0V400 M200 0V400 M300 0V400 M400 0V400 M500 0V400 M600 0V400 M700 0V400 M100 500V900 M200 500V900 M300 500V900 M400 500V900 M500 500V900 M600 500V900 M700 500V900 M300 0L500 200 M500 0L300 200 M300 700L500 900 M500 700L300 900" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <span class="river" aria-hidden="true">楚 河 <span>·</span> 漢 界</span>
+            <div id="squares" class="squares"></div>
+          </div>
+        </div>
+      </div>
+      <div class="board-footer"><span id="move-count">Nước 1</span><span>Chạm quân · chọn ô đích</span></div>
+      <div class="controls">
+        <button id="hint" class="button primary" type="button">✦ Gợi ý</button>
+        <button id="analyze" class="button dark" type="button">Phân tích</button>
+        <button id="undo" class="button subtle" type="button">↶ Hoàn tác</button>
+        <button id="reset" class="button subtle" type="button">Ván mới</button>
+      </div>
+    </section>
+
+    <aside class="analysis-card">
+      <div class="analysis-head"><div><span class="eyebrow">PIKAFISH · LOCAL WASM</span><h2>Huấn luyện viên</h2></div><div class="spark" aria-hidden="true">✳</div></div>
+      <p id="message" class="message">Đợi Pikafish tải xong, sau đó chọn Gợi ý hoặc Phân tích.</p>
+      <section class="score-card" aria-label="Nước gợi ý"><span class="eyebrow">NƯỚC ĐỀ NGHỊ</span><div id="best-move" class="best-move">—</div><div id="best-score" class="best-score">Chưa phân tích</div></section>
+      <div class="list-head"><span>TOP NƯỚC ĐI</span><span id="depth">MULTIPV 3</span></div>
+      <div id="lines" class="lines"><p class="empty">Kết quả Pikafish sẽ hiện tại đây.</p></div>
+      <section id="review" class="review" hidden><span class="eyebrow">NƯỚC VỪA ĐI</span><div id="review-text"></div></section>
+      <section id="replay" class="replay" hidden><div class="replay-header"><span class="eyebrow">XEM BIẾN</span><button id="replay-close" type="button" aria-label="Đóng xem biến">✕</button></div><p id="replay-label"></p><div class="replay-controls"><button id="replay-prev" type="button">← Trước</button><span id="replay-counter">0 / 0</span><button id="replay-next" type="button">Tiếp →</button></div></section>
+      <details class="settings"><summary>Thiết lập &amp; nhập thế cờ <span>⌄</span></summary><div class="settings-body"><label>Thời gian phân tích <select id="think-time"><option value="500">0,5 giây</option><option value="900" selected>0,9 giây</option><option value="2000">2 giây</option><option value="4000">4 giây</option></select></label><label>Số biến <select id="multi-pv"><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option></select></label><label>FEN <textarea id="fen" rows="3" spellcheck="false" aria-label="FEN vị trí hiện tại"></textarea></label><div class="settings-actions"><button id="load-fen" type="button">Nạp FEN</button><button id="copy-fen" type="button">Sao chép FEN</button></div></div></details>
+      <p class="notice">Pikafish đánh giá · lời giải chỉ dựa trên nước và điểm engine. Chỉ dùng để học hoặc phân tích khi được phép dùng engine.</p>
+    </aside>
+  </main>
+  <footer>PIKA COACH <span>·</span> WEB PREVIEW <span>·</span> <a href="https://github.com/Arsenal-Magus2105/pika-coach">Mã nguồn GPLv3</a></footer>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

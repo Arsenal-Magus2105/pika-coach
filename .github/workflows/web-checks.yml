@@ -1,0 +1,43 @@
+name: Pika Coach web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - '.github/workflows/web-checks.yml'
+  pull_request:
+    paths:
+      - 'web/**'
+      - '.github/workflows/web-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript and Xiangqi rules
+        run: |
+          node --check web/src/app.js
+          node --check web/src/engine-worker.js
+          cd web && npm test
+      - name: Fetch pinned Pikafish WebAssembly
+        run: bash web/scripts/fetch_engine.sh
+      - name: Test actual WebAssembly engine
+        run: node web/scripts/engine-smoke.cjs
+      - name: Upload web preview
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pika-coach-web
+          path: web/
+          if-no-files-found: error
+          retention-days: 7

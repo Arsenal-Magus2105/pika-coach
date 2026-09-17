@@ -16,3 +16,4 @@ app/ios/.symlinks/
 app/ios/Flutter/ephemeral/
 app/ios/Flutter/Generated.xcconfig
 app/ios/Flutter/flutter_export_environment.sh
+\nweb/vendor/pikafish.js\nweb/vendor/pikafish.wasm\nweb/vendor/pikafish.data\n

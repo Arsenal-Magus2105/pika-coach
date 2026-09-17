@@ -9,6 +9,17 @@ comparisons, move grading, and replayable principal variations.
 > and automated tests are present. GitHub Actions builds an unsigned iPhone IPA;
 > physical-device installation and engine runtime still need testing.
 
+## Web preview for iPhone and PC
+
+The new `web/` folder runs Pikafish WebAssembly in a browser worker. It has a
+Xiangqi board, basic legal moves, FEN import, hint, MultiPV, move grading,
+and principal-variation replay. `Pika Coach web` Actions runs Node tests and
+an actual Pikafish WASM smoke test, then uploads a static-site artifact.
+
+The repository is private, so a public URL requires a publishing destination
+such as a separate public GitHub Pages repository. The static site requires
+HTTPS when installed as a PWA. See [web/README.md](web/README.md).
+
 ## What works in the MVP
 
 - Full Xiangqi board and move validation inherited from `chessroad-lite`.
