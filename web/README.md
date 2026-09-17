@@ -28,3 +28,10 @@ as a tournament referee. Pikafish may analyze more slowly on mobile.
 
 The upstream WebAssembly engine and bundled network have a separate GPLv3
 engine and NNUE usage license; see `vendor/README.md` and `../LICENSE`.
+
+## Publish
+
+GitHub Pages serves this static site through `.github/workflows/web-pages.yml`.
+Select **GitHub Actions** as the Pages publishing source in repository settings;
+each update to `web/` then downloads the pinned engine, verifies it, and
+publishes the complete directory.
