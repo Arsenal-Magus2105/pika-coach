@@ -12,6 +12,7 @@ let analysisPosition = null;
 let replay = null;
 let busy = false;
 let engineReady = false;
+let pendingReview = null;
 const engine = new WebPikafish();
 
 function message(text) { $('message').textContent = text; }
@@ -82,8 +83,9 @@ async function tapSquare(index) {
   lastMove = [from, index];
   resetAnalysis();
   renderBoard();
-  message(`Đã đi ${moveLabel(before, move)}. Đang so với Pikafish…`);
-  if (engineReady) await grade(before, move, cached);
+  message(`Đã đi ${moveLabel(before, move)}. Đang tìm gợi ý cho lượt tiếp theo…`);
+  if (engineReady) await analyzeAfterMove(before, move, cached);
+  else pendingReview = { before, move, cached };
 }
 
 function setBusy(value) {
@@ -99,7 +101,6 @@ async function requestAnalysis(showHint = false) {
   setBusy(true);
   status('Đang phân tích…');
   message('Pikafish đang tìm các nước mạnh nhất trong vị trí này.');
-  $('review').hidden = true;
   try {
     const result = await engine.analyze(toFen(root), {
       multiPv: Number($('multi-pv').value),
@@ -124,9 +125,39 @@ async function requestAnalysis(showHint = false) {
   }
 }
 
-async function grade(before, played, cached) {
+async function analyzeAfterMove(before, played, cached) {
   setBusy(true);
-  status('Đang chấm nước…');
+  status('Đang tìm gợi ý…');
+  try {
+    const options = { multiPv: Number($('multi-pv').value), moveTimeMs: Number($('think-time').value) };
+    const current = position;
+    const result = await engine.analyze(toFen(current), {
+      ...options,
+      onProgress: progress => {
+        lines = progress;
+        analysisPosition = current;
+        hinted = fromUci(progress[0]?.moves[0]);
+        renderLines();
+        renderBoard();
+      },
+    });
+    lines = result.lines;
+    analysisPosition = current;
+    hinted = fromUci(lines[0]?.moves[0] ?? result.bestMove);
+    renderLines();
+    renderBoard();
+    message('Đã có gợi ý cho lượt này. Đang chấm nước vừa đi…');
+    await grade(before, played, cached, lines[0]?.score);
+  } catch (error) {
+    message(`Không phân tích được: ${error.message}`);
+    status('Lỗi Pikafish', true);
+  } finally {
+    setBusy(false);
+    if (engineReady) status('Pikafish sẵn sàng');
+  }
+}
+
+async function grade(before, played, cached, afterScore) {
   try {
     const options = { multiPv: Number($('multi-pv').value), moveTimeMs: Number($('think-time').value) };
     const beforeLines = cached.length ? cached : (await engine.analyze(toFen(before), options)).lines;
@@ -134,9 +165,8 @@ async function grade(before, played, cached) {
     if (!best?.moves.length) throw Error('Pikafish chưa trả về nước hợp lệ.');
     let playedScore = beforeLines.find(candidate => candidate.moves[0] === played)?.score;
     if (!playedScore) {
-      const after = (await engine.analyze(toFen(position), { ...options, multiPv: 1 })).lines[0];
-      if (!after?.score) throw Error('Chưa có điểm cho nước vừa đi.');
-      playedScore = { ...after.score, value: -after.score.value };
+      if (!afterScore) throw Error('Chưa có điểm cho nước vừa đi.');
+      playedScore = { ...afterScore, value: -afterScore.value };
     }
     const diff = best.score.type === 'cp' && playedScore.type === 'cp'
       ? Math.max(0, best.score.value - playedScore.value) : null;
@@ -151,12 +181,9 @@ async function grade(before, played, cached) {
     quality.textContent = label;
     review.append(summary, detail, quality);
     $('review').hidden = false;
-    message('Nước vừa đi đã được chấm. Chọn Phân tích để xem vị trí mới.');
+    message('Nước vừa đi đã được chấm. Gợi ý cho lượt tiếp theo đang hiển thị trên bàn.');
   } catch (error) {
     message(`Chưa chấm được nước: ${error.message}`);
-  } finally {
-    setBusy(false);
-    status('Pikafish sẵn sàng');
   }
 }
 
@@ -230,6 +257,7 @@ $('hint').addEventListener('click', () => requestAnalysis(true));
 $('analyze').addEventListener('click', () => requestAnalysis());
 $('undo').addEventListener('click', () => {
   if (busy || !history.length) return;
+  pendingReview = null;
   const previous = history.pop();
   position = previous.position;
   lastMove = previous.lastMove;
@@ -240,6 +268,7 @@ $('undo').addEventListener('click', () => {
 });
 $('reset').addEventListener('click', () => {
   if (busy) return;
+  pendingReview = null;
   position = parseFen(START_FEN);
   history = [];
   lastMove = null;
@@ -252,6 +281,7 @@ $('load-fen').addEventListener('click', () => {
   if (busy) return;
   try {
     position = parseFen($('fen').value);
+    pendingReview = null;
     history = [];
     lastMove = null;
     selected = null;
@@ -274,8 +304,13 @@ renderLines();
 engine.init().then(() => {
   engineReady = true;
   status('Pikafish sẵn sàng');
-  message('Chọn Gợi ý hoặc Phân tích. Pikafish chạy ngay trên thiết bị của sếp.');
+  message('Pikafish sẵn sàng. Sau mỗi nước đi, gợi ý sẽ tự hiện; sếp cũng có thể phân tích ngay thế hiện tại.');
   renderBoard();
+  if (pendingReview) {
+    const { before, move, cached } = pendingReview;
+    pendingReview = null;
+    void analyzeAfterMove(before, move, cached);
+  }
 }).catch(error => {
   status('Pikafish không khả dụng', true);
   message(`Bàn cờ vẫn dùng được. Lỗi tải engine: ${error.message}`);

@@ -30,13 +30,18 @@ const server = http.createServer(async (request, response) => {
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(`http://127.0.0.1:${server.address().port}/`);
     await page.waitForFunction(() => document.querySelector('#engine-status').textContent.includes('sẵn sàng'), null, { timeout: 45000 });
+    await page.getByRole('button', { name: 'Đỏ 炮 h2' }).click();
+    await page.getByRole('button', { name: 'Ô trống e2' }).click();
+    await page.waitForFunction(() => document.querySelector('#engine-status').textContent.includes('sẵn sàng') && document.querySelector('#best-move').textContent !== '—' && !document.querySelector('#review').hidden, null, { timeout: 45000 });
+    assert.equal(await page.locator('.square.hint').count(), 2);
+    assert.match(await page.locator('#review-text').innerText(), /Pikafish chọn/);
     await page.click('#analyze');
-    await page.waitForFunction(() => document.querySelector('#best-move').textContent !== '—' && !document.querySelector('#analyze').disabled, null, { timeout: 45000 });
-    assert.match(await page.locator('#best-score').innerText(), /^[+-]\d/);
+    await page.waitForFunction(() => !document.querySelector('#analyze').disabled, null, { timeout: 45000 });
+    assert.match(await page.locator('#best-score').innerText(), /^[+-]\d|Chiếu hết|Bị chiếu hết/);
     await page.locator('.line').first().click();
     assert.equal(await page.locator('#replay').isVisible(), true);
     assert.deepEqual(errors, []);
-    console.log('Mobile browser loaded Pikafish Worker, analyzed a position and replayed a line.');
+    console.log('Mobile browser automatically analyzed and graded a played move, then replayed an engine line.');
   } finally {
     await browser?.close();
     server.close();

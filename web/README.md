@@ -21,9 +21,10 @@ download. For a networked device, use HTTPS hosting; the PWA service worker
 requires HTTPS.
 
 Features: legal moves (basic check safety, cannon screens, horse legs,
-elephant river, palace), FEN, undo, best move, MultiPV, typed cp/mate score,
-move review and safe replay of legal principal variation. Long-check and
-repetition adjudication need more work; the browser preview should not be used
+elephant river, palace), FEN, undo, automatic best-move suggestions and
+move review after each move, MultiPV, typed cp/mate score, and safe replay of
+legal principal variation. Long-check and repetition adjudication need more
+work; the browser preview should not be used
 as a tournament referee. Pikafish may analyze more slowly on mobile.
 
 The upstream WebAssembly engine and bundled network have a separate GPLv3
