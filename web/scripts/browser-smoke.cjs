@@ -29,10 +29,14 @@ const server = http.createServer(async (request, response) => {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(`http://127.0.0.1:${server.address().port}/`);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'wooden board must fit a phone viewport');
+    const board = await page.locator('#board').boundingBox();
+    assert(board.width > 300 && board.x >= 0 && board.x + board.width <= 390, 'board should fill the phone without clipping');
     await page.waitForFunction(() => document.querySelector('#engine-status').textContent.includes('sẵn sàng'), null, { timeout: 45000 });
     await page.getByRole('button', { name: 'Đỏ 炮 h2' }).click();
     await page.getByRole('button', { name: 'Ô trống e2' }).click();
     await page.waitForFunction(() => document.querySelector('#engine-status').textContent.includes('sẵn sàng') && document.querySelector('#best-move').textContent !== '—' && !document.querySelector('#review').hidden, null, { timeout: 45000 });
+    assert.match(await page.locator('#board-suggestion').innerText(), /^Gợi ý:/);
     assert.equal(await page.locator('.square.hint').count(), 2);
     assert.match(await page.locator('#review-text').innerText(), /Pikafish chọn/);
     await page.click('#analyze');

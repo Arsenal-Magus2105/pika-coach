@@ -193,6 +193,9 @@ function renderLines() {
   const first = lines[0];
   $('best-move').textContent = first?.moves.length && analysisPosition ? moveLabel(analysisPosition, first.moves[0]) : '—';
   $('best-score').textContent = first ? scoreText(first.score) : 'Chưa phân tích';
+  $('board-suggestion').textContent = first?.moves.length && analysisPosition
+    ? `Gợi ý: ${moveLabel(analysisPosition, first.moves[0])} · ${scoreText(first.score)}`
+    : busy ? 'Pikafish đang tìm gợi ý…' : 'Chạm quân · chọn ô đích';
   $('depth').textContent = first ? `DEPTH ${first.depth} · ${lines.length} BIẾN` : `MULTIPV ${$('multi-pv').value}`;
   if (!lines.length) {
     const empty = document.createElement('p');
